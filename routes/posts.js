@@ -20,23 +20,30 @@ const posts = [
 
 router.get("/", clerk.expressRequireAuth(), async (req, res) => {
   // console.log(await req.auth);
-  // console.log(await clerk.users.getUser(req.auth.userId));
-  // console.log(await clerk.users.getUserList());
+  console.log(await clerk.users.getUser(req.auth.userId));
+  console.log(await clerk.users.getOrganizationMembershipList({
+    userId: "user_2PNk2GxKI9MI9a5UfAaLuqcnCT8",
+  }));
 
-  let newposts = await Promise.all(posts.map(async post => {
-    let user = await clerk.users.getUser(post.userId)
-    post.user = {
+  const users = (await clerk.users.getUserList({
+    userId: posts.map(post => post.userId)
+  }))
+    .map(user => ({
+      id: user.id,
       username: user.username,
       firstName: user.firstName,
       lastName: user.lastName,
       profileImageUrl: user.profileImageUrl
-    };
-    return post
+    }));
+
+  let newPosts = posts.map(post => ({
+    post,
+    user: users.find(user => user.id === post.userId)
   }))
 
 
 
-  return res.status(200).json({ posts: newposts });
+  return res.status(200).json({ data: newPosts });
 })
 
 module.exports = router;
