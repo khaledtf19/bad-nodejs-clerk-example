@@ -22,7 +22,7 @@ router.get("/", clerk.expressRequireAuth(), async (req, res) => {
   // console.log(await req.auth);
   console.log(await clerk.users.getUser(req.auth.userId));
   console.log(await clerk.users.getOrganizationMembershipList({
-    userId: "user_2PNk2GxKI9MI9a5UfAaLuqcnCT8",
+    userId: req.auth.userId,
   }));
 
   const users = (await clerk.users.getUserList({
